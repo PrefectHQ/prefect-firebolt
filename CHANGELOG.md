@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `FireboltCredentials` block - [#1](https://github.com/PrefectHQ/prefect-firebolt/pull/1)
+- `FireboltDatabase` block - [#1](https://github.com/PrefectHQ/prefect-firebolt/pull/1)
+
 ### Changed
 
 ### Deprecated
