@@ -1,7 +1,7 @@
-from unittest.mock import patch
-
 import pytest
+from prefect.testing.utilities import AsyncMock
 
+import prefect_firebolt.database
 from prefect_firebolt import FireboltDatabase
 from prefect_firebolt.credentials import FireboltCredentials
 
@@ -39,26 +39,27 @@ def test_valid_engine_parameters(engine_name, engine_url):
         (FireboltCredentials(token="abc123")),
     ],
 )
-async def test_get_connection(credentials):
-    with patch("prefect_firebolt.database.connect") as connect:
-        await FireboltDatabase(
-            database="prod",
-            credentials=credentials,
-        ).get_connection()
-        connect.assert_called_once()
+async def test_get_connection(credentials, monkeypatch):
+    connect_mock = AsyncMock()
+    monkeypatch.setattr(prefect_firebolt.database, "connect", connect_mock)
+    await FireboltDatabase(
+        database="prod",
+        credentials=credentials,
+    ).get_connection()
+    connect_mock.assert_called_once()
 
-        call_kwargs = connect.call_args.kwargs
-        auth = call_kwargs.pop("auth")
+    call_kwargs = connect_mock.call_args.kwargs
+    auth = call_kwargs.pop("auth")
 
-        if credentials.token:
-            assert auth.token == credentials.token.get_secret_value()
-        else:
-            assert auth.username == credentials.username
-            assert auth.password == credentials.password.get_secret_value()
-        assert call_kwargs == {
-            "database": "prod",
-            "engine_name": None,
-            "engine_url": None,
-            "api_endpoint": "api.app.firebolt.io",
-            "additional_parameters": {},
-        }
+    if credentials.token:
+        assert auth.token == credentials.token.get_secret_value()
+    else:
+        assert auth.username == credentials.username
+        assert auth.password == credentials.password.get_secret_value()
+    assert call_kwargs == {
+        "database": "prod",
+        "engine_name": None,
+        "engine_url": None,
+        "api_endpoint": "api.app.firebolt.io",
+        "additional_parameters": {},
+    }
