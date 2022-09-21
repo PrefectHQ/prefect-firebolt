@@ -60,7 +60,7 @@ from prefect_firebolt import FireboltCredentials, FireboltDatabase, query_firebo
 @flow
 def run_firebolt_query():
     firebolt_database_block = FireboltDatabase(
-        database="intergalactic_trips",
+        database="travel",
         credentials=FireboltCredentials(
             username="arthur.dent@hitchhikers.com", password="dont42panic"
         ),

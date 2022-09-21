@@ -114,7 +114,7 @@ async def query_firebolt(
         database: Firebolt database configuration to use for query execution.
         query: SQL query to execute.
         parameters: A sequence of substitution parameters. Used to replace `?`
-            placeholders inside a query with actual values
+            placeholders inside a query with actual values.
 
     Returns:
         All rows retrieved by the query.
@@ -130,7 +130,7 @@ async def query_firebolt(
         @flow
         def run_firebolt_query():
             firebolt_database_block = FireboltDatabase(
-                database="intergalactic_trips",
+                database="travel",
                 credentials=FireboltCredentials(
                     username="arthur.dent@hitchhikers.com", password="dont42panic"
                 ),
