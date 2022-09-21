@@ -79,7 +79,7 @@ class TestQueryFirebolt:
 
         # link all the mocks together appropriately
         firebolt_connect.return_value.__aenter__.return_value = connection
-        connection.cursor.return_value.__enter__.return_value = cursor
+        connection.cursor.return_value = cursor
         monkeypatch.setattr(prefect_firebolt.database, "connect", firebolt_connect)
 
         return connection, cursor
