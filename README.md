@@ -18,7 +18,9 @@
 
 ## Welcome!
 
-Prefect integrations for working with Firebolt data warehouses.
+`prefect-firebolt` is a collection of Prefect integrations for working with Firebolt data warehouses.
+
+[Firebolt](https://www.firebolt.io/) is a Cloud Data Warehousing solution that helps its users streamline their Data Analytics and access to insights. For more information about getting started with Firebolt, read [Firebolt's getting started guide](https://docs.firebolt.io/getting-started.html).
 
 ## Getting Started
 
