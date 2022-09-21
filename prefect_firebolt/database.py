@@ -1,13 +1,17 @@
 """Module for interacting with Firebolt databases"""
-from typing import Dict, Optional
+from typing import TYPE_CHECKING, Dict, List, Optional, Sequence
 
 from firebolt.async_db.connection import Connection, connect
 from firebolt.client.auth import Token, UsernamePassword
+from prefect import task
 from prefect.blocks.core import Block
 from prefect.utilities.asyncutils import sync_compatible
 from pydantic import Field, root_validator
 
 from prefect_firebolt.credentials import FireboltCredentials
+
+if TYPE_CHECKING:
+    from firebolt.async_db._types import ColType, ParameterType
 
 
 class FireboltDatabase(Block):
@@ -95,3 +99,56 @@ class FireboltDatabase(Block):
             api_endpoint=self.credentials.api_endpoint,
             additional_parameters=self.additional_parameters,
         )
+
+
+@task
+async def query_firebolt(
+    database: FireboltDatabase,
+    query: str,
+    parameters: "Optional[Sequence[ParameterType]]" = None,
+) -> "List[List[ColType]]":
+    """
+    Executes a query against a Firebolt database.
+
+    Args:
+        database: Firebolt database configuration to use for query execution.
+        query: SQL query to execute.
+        parameters: A sequence of substitution parameters. Used to replace `?`
+            placeholders inside a query with actual values.
+
+    Returns:
+        All rows retrieved by the query.
+
+    Example:
+        Execute a query against a Firebolt database:
+        ```python
+        from prefect import flow
+
+        from prefect_firebolt import FireboltCredentials, FireboltDatabase, query_firebolt
+
+
+        @flow
+        def run_firebolt_query():
+            firebolt_database_block = FireboltDatabase(
+                database="travel",
+                credentials=FireboltCredentials(
+                    username="arthur.dent@hitchhikers.com", password="dont42panic"
+                ),
+            )
+
+            results = query_firebolt(
+                database=firebolt_database_block,
+                query="SELECT * FROM ex_intergalactic_trips LIMIT 100",
+            )
+
+            return results
+
+
+        run_firebolt_query()
+        ```
+    """  # noqa
+    async with await database.get_connection() as connection:
+        cursor = connection.cursor()
+        with cursor:
+            await cursor.execute(query=query, parameters=parameters)
+            return await cursor.fetchall()
