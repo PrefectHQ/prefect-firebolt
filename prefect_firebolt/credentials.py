@@ -35,7 +35,7 @@ class FireboltCredentials(Block):
         # No auth details provided
         if not any([has_password, has_username, has_token]):
             raise ValueError(
-                "You have not provided a username/password or token"
+                "You have not provided a username/password or token. "
                 "Please provide either a username and password or a token."
             )
         # Username/password and token provided
@@ -45,7 +45,7 @@ class FireboltCredentials(Block):
                 "Please provide either a username and password or a token."
             )
         # Username/password not provided together
-        if not (has_username ^ has_password):
+        if has_username ^ has_password:
             raise ValueError(
                 "You have provided only a username or password. "
                 "Please provide both a username and a password."
