@@ -54,8 +54,7 @@ Execute a query against a Firebolt database:
 ```python
 from prefect import flow
 
-from prefect_firebolt import FireboltCredentials, FireboltDatabase
-from prefect_firebolt.database import query_firebolt
+from prefect_firebolt import FireboltCredentials, FireboltDatabase, query_firebolt
 
 
 @flow

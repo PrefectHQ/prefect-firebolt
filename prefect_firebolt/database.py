@@ -124,8 +124,7 @@ async def query_firebolt(
         ```python
         from prefect import flow
 
-        from prefect_firebolt import FireboltCredentials, FireboltDatabase
-        from prefect_firebolt.database import query_firebolt
+        from prefect_firebolt import FireboltCredentials, FireboltDatabase, query_firebolt
 
 
         @flow
@@ -147,7 +146,7 @@ async def query_firebolt(
 
         run_firebolt_query()
         ```
-    """
+    """  # noqa
     async with await database.get_connection() as connection:
         cursor = connection.cursor()
         with cursor:
