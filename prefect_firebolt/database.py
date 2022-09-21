@@ -4,6 +4,7 @@ from typing import Dict, Optional
 from firebolt.async_db.connection import Connection, connect
 from firebolt.client.auth import Token, UsernamePassword
 from prefect.blocks.core import Block
+from prefect.utilities.asyncutils import sync_compatible
 from pydantic import Field, root_validator
 
 from prefect_firebolt.credentials import FireboltCredentials
@@ -37,13 +38,13 @@ class FireboltDatabase(Block):
         description="The name of the database to connect to.",
     )
     engine_name: Optional[str] = Field(
-        None,
+        default=None,
         description="Name of the engine to connect to. May not be used with "
         "engine_url. If neither engine_name nor engine_url is provided, the "
         "default engine for the configured database will be used.",
     )
     engine_url: Optional[str] = Field(
-        None,
+        default=None,
         title="Engine URL",
         description="The engine endpoint to use. May not be used with engine_name. "
         "If neither engine_name nor engine_url is provided, the "
@@ -67,6 +68,7 @@ class FireboltDatabase(Block):
             )
         return values
 
+    @sync_compatible
     async def get_connection(self) -> Connection:
         """
         Creates and returns an authenticated Firebolt connection for the

@@ -1,4 +1,4 @@
-"""Module for managing Firebolt credentials"""
+"""Module for managing Firebolt credentials."""
 
 from typing import Optional
 
@@ -64,12 +64,12 @@ class FireboltCredentials(Block):
         description="Authentication token to use instead of username and password.",
     )
     api_endpoint: str = Field(
-        DEFAULT_API_URL,
+        default=DEFAULT_API_URL,
         title="API Endpoint",
         description="Firebolt API endpoint used for authentication.",
     )
     account_name: Optional[str] = Field(
-        None,
+        default=None,
         description="Name of the account to authenticate with. If not "
         "provided, the default account will be used.",
     )
