@@ -38,30 +38,42 @@ Install `prefect-firebolt` with `pip`:
 pip install prefect-firebolt
 ```
 
-Then, register to [view the block](https://orion-docs.prefect.io/ui/blocks/) on Prefect Cloud:
+Then, register to [view the Firebolt blocks](https://orion-docs.prefect.io/ui/blocks/) on Prefect Cloud:
 
 ```bash
-prefect block register -m prefect_firebolt.credentials
+prefect block register -m prefect_firebolt
 ```
 
 Note, to use the `load` method on Blocks, you must already have a block document [saved through code](https://orion-docs.prefect.io/concepts/blocks/#saving-blocks) or [saved through the UI](https://orion-docs.prefect.io/ui/blocks/).
 
 ### Write and run a flow
 
+Execute a query against a Firebolt database:
 ```python
 from prefect import flow
-from prefect_firebolt.tasks import (
-    goodbye_prefect_firebolt,
-    hello_prefect_firebolt,
-)
+
+from prefect_firebolt import FireboltCredentials, FireboltDatabase
+from prefect_firebolt.database import query_firebolt
 
 
 @flow
-def example_flow():
-    hello_prefect_firebolt
-    goodbye_prefect_firebolt
+def run_firebolt_query():
+    firebolt_database_block = FireboltDatabase(
+        database="intergalactic_trips",
+        credentials=FireboltCredentials(
+            username="arthur.dent@hitchhikers.com", password="dont42panic"
+        ),
+    )
 
-example_flow()
+    results = query_firebolt(
+        database=firebolt_database_block,
+        query="SELECT * FROM ex_intergalactic_trips LIMIT 100",
+    )
+
+    return results
+
+
+run_firebolt_query()        
 ```
 
 ## Resources
