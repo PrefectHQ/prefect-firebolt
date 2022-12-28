@@ -1,2 +1,2 @@
 prefect>=2.7.0
-firebolt-sdk
+firebolt-sdk>=0.8.0
