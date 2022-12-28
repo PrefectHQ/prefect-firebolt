@@ -1,5 +1,5 @@
 """Module for interacting with Firebolt databases"""
-from typing import Any, TYPE_CHECKING, Dict, List, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence
 
 from firebolt.async_db.connection import Connection
 from prefect import task
@@ -72,6 +72,7 @@ class FireboltDatabase(Block):
         return values
 
     def _get_connect_params(self) -> Dict[str, Any]:
+        """Assemble the parameters to pass to the Firebolt connection"""
         return {
             "database": self.database,
             "engine_name": self.engine_name,
@@ -85,9 +86,7 @@ class FireboltDatabase(Block):
         Creates and returns an authenticated Firebolt connection for the
         configured database.
         """
-        return await self.credentials.get_client(
-            **self._get_connect_params()
-        )
+        return await self.credentials.get_client(**self._get_connect_params())
 
 
 @task

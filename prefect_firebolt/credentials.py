@@ -2,7 +2,7 @@
 
 from typing import Dict, Optional
 
-from firebolt.async_db.connection import connect, Connection
+from firebolt.async_db.connection import Connection, connect
 from firebolt.client.auth import Token, UsernamePassword
 from firebolt.client.constants import DEFAULT_API_URL
 from prefect.blocks.abstract import CredentialsBlock
@@ -77,6 +77,15 @@ class FireboltCredentials(CredentialsBlock):
     )
 
     async def get_client(self, **connect_params: Dict) -> Connection:
+        """Retrieves an initialized Firebolt connection object.
+
+        Args:
+            **connect_params: Additional parameters to pass to the Firebolt
+                connection object.
+
+        Returns:
+            A Firebolt connection object.
+        """
         if self.token:
             auth = Token(token=self.token.get_secret_value())
         elif self.username and self.password:
@@ -91,7 +100,5 @@ class FireboltCredentials(CredentialsBlock):
             )
 
         return await connect(
-            api_endpoint=self.api_endpoint,
-            auth=auth,
-            **connect_params
+            api_endpoint=self.api_endpoint, auth=auth, **connect_params
         )
