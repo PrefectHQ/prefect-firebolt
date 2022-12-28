@@ -1,8 +1,7 @@
 """Module for interacting with Firebolt databases"""
-from typing import TYPE_CHECKING, Dict, List, Optional, Sequence
+from typing import Any, TYPE_CHECKING, Dict, List, Optional, Sequence
 
-from firebolt.async_db.connection import Connection, connect
-from firebolt.client.auth import Token, UsernamePassword
+from firebolt.async_db.connection import Connection
 from prefect import task
 from prefect.blocks.core import Block
 from prefect.utilities.asyncutils import sync_compatible
@@ -72,32 +71,22 @@ class FireboltDatabase(Block):
             )
         return values
 
+    def _get_connect_params(self) -> Dict[str, Any]:
+        return {
+            "database": self.database,
+            "engine_name": self.engine_name,
+            "engine_url": self.engine_url,
+            "additional_parameters": self.additional_parameters,
+        }
+
     @sync_compatible
     async def get_connection(self) -> Connection:
         """
         Creates and returns an authenticated Firebolt connection for the
         configured database.
         """
-        if self.credentials.token:
-            auth = Token(token=self.credentials.token.get_secret_value())
-        elif self.credentials.username and self.credentials.password:
-            auth = UsernamePassword(
-                username=self.credentials.username,
-                password=self.credentials.password.get_secret_value(),
-            )
-        else:
-            raise ValueError(
-                "Unable to initialize Firebolt auth. Expected username "
-                "and password or token, but received neither."
-            )
-
-        return await connect(
-            database=self.database,
-            auth=auth,
-            engine_name=self.engine_name,
-            engine_url=self.engine_url,
-            api_endpoint=self.credentials.api_endpoint,
-            additional_parameters=self.additional_parameters,
+        return await self.credentials.get_client(
+            **self._get_connect_params()
         )
 
 

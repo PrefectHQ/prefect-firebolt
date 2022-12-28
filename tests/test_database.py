@@ -44,7 +44,7 @@ class TestFireboltDatabase:
     )
     async def test_get_connection(self, credentials, monkeypatch):
         connect_mock = AsyncMock()
-        monkeypatch.setattr(prefect_firebolt.database, "connect", connect_mock)
+        monkeypatch.setattr(prefect_firebolt.credentials, "connect", connect_mock)
         await FireboltDatabase(
             database="prod",
             credentials=credentials,
@@ -80,7 +80,7 @@ class TestQueryFirebolt:
         # link all the mocks together appropriately
         firebolt_connect.return_value.__aenter__.return_value = connection
         connection.cursor.return_value = cursor
-        monkeypatch.setattr(prefect_firebolt.database, "connect", firebolt_connect)
+        monkeypatch.setattr(prefect_firebolt.credentials, "connect", firebolt_connect)
 
         return connection, cursor
 
