@@ -1,13 +1,15 @@
 """Module for managing Firebolt credentials."""
 
-from typing import Optional
+from typing import Dict, Optional
 
+from firebolt.async_db.connection import Connection, connect
+from firebolt.client.auth import Token, UsernamePassword
 from firebolt.client.constants import DEFAULT_API_URL
-from prefect.blocks.core import Block
+from prefect.blocks.abstract import CredentialsBlock
 from pydantic import Field, SecretStr, root_validator
 
 
-class FireboltCredentials(Block):
+class FireboltCredentials(CredentialsBlock):
     """
     Store credentials for authenticating with Firebolt.
 
@@ -74,3 +76,30 @@ class FireboltCredentials(Block):
         description="Name of the account to authenticate with. If not "
         "provided, the default account will be used.",
     )
+
+    async def get_client(self, **connect_params: Dict) -> Connection:
+        """Retrieves an initialized Firebolt connection object.
+
+        Args:
+            **connect_params: Additional parameters to pass to the Firebolt
+                connection object.
+
+        Returns:
+            A Firebolt connection object.
+        """
+        if self.token:
+            auth = Token(token=self.token.get_secret_value())
+        elif self.username and self.password:
+            auth = UsernamePassword(
+                username=self.username,
+                password=self.password.get_secret_value(),
+            )
+        else:
+            raise ValueError(
+                "Unable to initialize Firebolt auth. Expected username "
+                "and password or token, but received neither."
+            )
+
+        return await connect(
+            api_endpoint=self.api_endpoint, auth=auth, **connect_params
+        )
