@@ -1,5 +1,5 @@
 import pytest
-from firebolt.async_db.connection import Connection
+from firebolt.async_db.connection import Connection, connect
 from firebolt.async_db.cursor import Cursor
 from prefect.testing.utilities import AsyncMock
 
@@ -70,16 +70,17 @@ class TestFireboltDatabase:
 
 class TestQueryFirebolt:
     @pytest.fixture
-    def mock_connect(self, monkeypatch):
+    async def mock_connect(self, monkeypatch):
 
         # returns a mocked cursor for testing
-        firebolt_connect = AsyncMock(name="mock_connect")
+        firebolt_connect = AsyncMock(spec=connect, name="mock_connect")
         connection = AsyncMock(spec=Connection, name="mock_connection")
         cursor = AsyncMock(spec=Cursor, name="mock_cursor")
 
         # link all the mocks together appropriately
         firebolt_connect.return_value.__aenter__.return_value = connection
         connection.cursor.return_value = cursor
+        cursor.execute = AsyncMock()
         monkeypatch.setattr(prefect_firebolt.credentials, "connect", firebolt_connect)
 
         return connection, cursor
