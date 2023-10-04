@@ -6,7 +6,12 @@ from firebolt.async_db.connection import Connection, connect
 from firebolt.client.auth import Token, UsernamePassword
 from firebolt.client.constants import DEFAULT_API_URL
 from prefect.blocks.abstract import CredentialsBlock
-from pydantic import Field, SecretStr, root_validator
+from pydantic import VERSION as PYDANTIC_VERSION
+
+if PYDANTIC_VERSION.startswith("2."):
+    from pydantic.v1 import Field, SecretStr, root_validator
+else:
+    from pydantic import Field, SecretStr, root_validator
 
 
 class FireboltCredentials(CredentialsBlock):
