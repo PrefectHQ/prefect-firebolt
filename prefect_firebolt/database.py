@@ -5,7 +5,12 @@ from firebolt.async_db.connection import Connection
 from prefect import task
 from prefect.blocks.core import Block
 from prefect.utilities.asyncutils import sync_compatible
-from pydantic import Field, root_validator
+from pydantic import VERSION as PYDANTIC_VERSION
+
+if PYDANTIC_VERSION.startswith("2."):
+    from pydantic.v1 import Field, root_validator
+else:
+    from pydantic import Field, root_validator
 
 from prefect_firebolt.credentials import FireboltCredentials
 
