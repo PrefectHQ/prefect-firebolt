@@ -36,7 +36,7 @@ class FireboltDatabase(Block):
     """
 
     _block_type_name = "Firebolt Database"
-    _logo_url = "https://images.ctfassets.net/gm98wzqotmnx/3loU17IXqVIWl4aWQfqc78/3c7eefe5e8cf4eec870856f10d7fdcce/5e8a264ceaf4870c90478037_Favicon_128.svg.png?h=250"  # noqa
+    _logo_url = "https://cdn.sanity.io/images/3ugk85nk/production/df83dc3c5789050a0b6b146a3780e5982df693f7-300x300.png"  # noqa
     _documentation_url = "https://prefecthq.github.io/prefect-firebolt/database/#prefect_firebolt.database.FireboltDatabase"  # noqa
     _description = "Connects to a Firebolt database."
 
